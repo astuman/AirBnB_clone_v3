@@ -97,11 +97,11 @@ class TestDBStorage(unittest.TestCase):
         """Test that get returns specific object, or none"""
         newState = State(name="New York")
         newState.save()
-        newUser = User(email="bob@foobar.com", password="password")
+        newUser = User(email="lolo@gmail.com", password="password")
         newUser.save()
         self.assertIs(newState, models.storage.get("State", newState.id))
-        self.assertIs(None, models.storage.get("State", "blah"))
-        self.assertIs(None, models.storage.get("blah", "blah"))
+        self.assertIs(None, models.storage.get("State", "state1"))
+        self.assertIs(None, models.storage.get("state1", "state1"))
         self.assertIs(newUser, models.storage.get("User", newUser.id))
 
     @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
@@ -109,10 +109,10 @@ class TestDBStorage(unittest.TestCase):
     def test_count(self):
         """add new object to db"""
         startCount = models.storage.count()
-        self.assertEqual(models.storage.count("Blah"), 0)
-        newState = State(name="Montevideo")
+        self.assertEqual(models.storage.count("state1"), 0)
+        newState = State(name="State2")
         newState.save()
-        newUser = User(email="ralexrivero@gmail.com.com", password="dummypass")
+        newUser = User(email="lolo1@gmail.com", password="password")
         newUser.save()
         self.assertEqual(models.storage.count("State"), startCount + 1)
         self.assertEqual(models.storage.count(), startCount + 2)
