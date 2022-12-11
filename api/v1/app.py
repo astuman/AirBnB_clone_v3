@@ -1,41 +1,35 @@
 #!/usr/bin/python3
+"""
+Sets up Flask application
 
 """
-Flask App that integrates with AirBnB static HTML Template
-"""
-from flask import Flask, jsonify, make_response
-from models import storage
-from api.v1.views import app_views
-import os
+
+
+from os import getenv
+from flask import Flask, make_response, jsonify
 from flask_cors import CORS
 
-host = os.getenv('HBNB_API_HOST', '0.0.0.0')
-port = os.getenv('HBNB_API_PORT', 5000)
+from api.v1.views import app_views
+from models import storage
 
 app = Flask(__name__)
-
+CORS(app, orgins='0.0.0.0')
 app.register_blueprint(app_views)
-
-cors = CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-
-
-@app.teardown_appcontext
-def teardown_db(exception):
-    """
-    after each request, this method calls .close() (i.e. .remove()) on
-    the current SQLAlchemy Session
-    """
-    storage.close()
 
 
 @app.errorhandler(404)
-def not_found(error):
-    """
-    a handler for 404 errors that returns a JSON-formatted
-    404 status code response
-    """
+def page_not_found(error):
+    """Returns JSON error repsponse"""
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-if __name__ == "__main__":
-    app.run(host=host, port=port)
+@app.teardown_appcontext
+def teardown(self):
+    """Closes storage session"""
+    storage.close()
+
+
+if __name__ == '__main__':
+    api_host = getenv('HBNB_API_HOST', default='0.0.0.0')
+    api_port = getenv('HBNB_API_PORT', default=5000)
+    app.run(host=api_host, port=int(api_port), threaded=True)
